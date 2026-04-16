@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <title>User Manager</title>
+  </head>
+  <body>
+    <h2>Create User</h2>
+    <input id="name" placeholder="Name" /><br />
+    <input id="username" placeholder="Username" /><br />
+    <input id="email" placeholder="Email" /><br />
+    <input id="dob" placeholder="YYYY-MM-DD" /><br />
+    <button onclick="createUser()">Add User</button>
+
+    <h2>All Users</h2>
+    <button onclick="getUsers()">Load Users</button>
+    <ul id="users"></ul>
+
+    <h2>Search User</h2>
+    <input id="searchUsername" placeholder="Username" />
+    <button onclick="searchUser()">Search</button>
+
+    <h2>Edit User</h2>
+    <input id="editUsername" placeholder="Username" /><br />
+    <input id="editName" placeholder="New Name" /><br />
+    <input id="editEmail" placeholder="New Email" /><br />
+    <button onclick="editUser()">Edit</button>
+
+    <h2>Delete User</h2>
+    <input id="deleteUsername" placeholder="Username" />
+    <button onclick="deleteUser()">Delete</button>
+
+    <script>
+      async function getUsers() {
+        const res = await fetch("http://localhost:3000/users");
+        const data = await res.json();
+
+        const list = document.getElementById("users");
+        list.innerHTML = "";
+
+        data.forEach((user) => {
+          const li = document.createElement("li");
+          li.textContent = JSON.stringify(user);
+          list.appendChild(li);
+        });
+      }
+
+      async function createUser() {
+        await fetch("http://localhost:3000/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: document.getElementById("name").value,
+            username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
+            dob: document.getElementById("dob").value,
+          }),
+        });
+        alert("User added");
+      }
+
+      async function deleteUser() {
+        await fetch(`http://localhost:3000/users/${deleteUsername.value}`, {
+          method: "DELETE",
+        });
+        alert("User deleted");
+      }
+
+      async function editUser() {
+        await fetch("http://localhost:3000/users", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: editUsername.value,
+            name: editName.value,
+            email: editEmail.value,
+          }),
+        });
+        alert("User updated");
+      }
+
+      async function searchUser() {
+        const res = await fetch(
+          `http://localhost:3000/search/${searchUsername.value}`,
+        );
+        const data = await res.json();
+
+        alert(JSON.stringify(data));
+      }
+    </script>
+  </body>
+</html>
